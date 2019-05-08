@@ -1,0 +1,1 @@
+export const STATUS_MESSAGE_UPDATE = Symbol('STATUS_MESSAGE_UPDATE')
