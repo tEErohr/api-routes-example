@@ -9,6 +9,7 @@ import { configureStore } from './store/configureStore'
 import StatusComponent from './components/status/StatusComponent'
 import { history } from './store/history'
 import Link from './routing/components/Link'
+import { ApiRoute } from './routing/components/ApiRoute'
 
 const store = configureStore()
 
@@ -39,9 +40,21 @@ const App: React.FC = () => {
               </div>
               <div data-section='app-content'>
                 <Switch>
-                  <Route path='/foo'>
-                    <h3>Foo it is!</h3>
-                  </Route>
+                  <ApiRoute
+                    path='/foo'
+                    resolver={(location, match) => {
+                      return new Promise(resolve => {
+                        setTimeout(() => {
+                          resolve({
+                            message: 'Resolved data',
+                          })
+                        }, 1000)
+                      })
+                    }}>
+                    {childProps => {
+                      return <p>{JSON.stringify(childProps, null, '  ')}</p>
+                    }}
+                  </ApiRoute>
                   <Route path='/:slug'>
                     {props => {
                       const { slug = 'World' } = (props.match && props.match.params) || {}
