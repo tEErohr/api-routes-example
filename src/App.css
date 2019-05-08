@@ -31,3 +31,20 @@
     transform: rotate(360deg);
   }
 }
+
+[data-section='app-body'] {
+  display: flex;
+  flex-direction: row;
+}
+
+[data-section='app-sidebar'] {
+  display: flex;
+  flex-direction: column;
+  width: 20rem;
+}
+
+[data-section='app-content'] {
+  display: flex;
+  flex: 1;
+  padding-left: 1rem;
+}

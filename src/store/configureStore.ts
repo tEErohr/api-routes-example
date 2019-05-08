@@ -1,20 +1,14 @@
-import { createStore, combineReducers } from 'redux'
-import { statusRootReducer } from './status/module'
+import { createStore, applyMiddleware } from 'redux'
+import { rootReducerFactory } from './rootReducer'
+import { history } from './history'
+import { routerMiddleware } from 'connected-react-router'
+import { composeWithDevTools } from 'redux-devtools-extension'
 
-declare global {
-  interface Window {
-    __REDUX_DEVTOOLS_EXTENSION__?: any
-  }
-}
+const middlewareComposition = composeWithDevTools(applyMiddleware(routerMiddleware(history)))
 
 /* tslint:disable:no-underscore-dangle */
 export const configureStore = () => {
-  const store = createStore(
-    combineReducers({
-      status: statusRootReducer,
-    }),
-    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
-  )
+  const store = createStore(rootReducerFactory(history), middlewareComposition)
   return store
 }
 /* tslint:enable */
