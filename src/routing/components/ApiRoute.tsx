@@ -34,31 +34,38 @@ export const getResolverCache = (resolver: ApiRouteResolver): Map<string, any> =
   return dataCache
 }
 
+function useProtectedState<T>(initialValue: T): [T, React.Dispatch<React.SetStateAction<T>>] {
+  const originalState = React.useState(initialValue)
+  const [state, setState] = originalState
+  let mounted = true
+  React.useEffect(
+    () => () => {
+      mounted = false
+    },
+    [],
+  )
+  const setStateProtected: React.Dispatch<React.SetStateAction<T>> = (nextState: React.SetStateAction<T>) => {
+    if (mounted) {
+      setState(nextState)
+    }
+  }
+  return [state, setStateProtected]
+}
+
 export const ApiRoute = (props: ApiRouteProps) => {
   const { resolver, ...routeProps } = props
   const cache = getResolverCache(resolver)
   const cacheKey = props.location && props.location.key ? props.location.key : null
   const initialData = cacheKey ? cache.get(cacheKey) : null
-  const [data, setData] = React.useState(initialData)
-  const [status, setStatus] = React.useState('idle')
-  let mounted = true
-
-  React.useEffect(() => {
-    return () => {
-      mounted = false
-    }
-  }, [])
+  const [data, setData] = useProtectedState(initialData)
+  const [status, setStatus] = useProtectedState('idle')
 
   React.useEffect(() => {
     if (data) {
       setStatus('loaded')
     } else if (status === 'idle') {
+      resolver(props.location).then(setData)
       setStatus('loading')
-      resolver(props.location).then(data => {
-        if (mounted) {
-          setData(data)
-        }
-      })
     }
   })
 

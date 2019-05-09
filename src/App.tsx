@@ -13,6 +13,8 @@ import { ApiRoute } from './routing/components/ApiRoute'
 
 const store = configureStore()
 
+let resolveCount = 0
+
 const App: React.FC = () => {
   return (
     <Provider store={store}>
@@ -46,7 +48,7 @@ const App: React.FC = () => {
                       return new Promise(resolve => {
                         setTimeout(() => {
                           resolve({
-                            message: 'Resolved data',
+                            message: `Resolved data #${resolveCount++}`,
                           })
                         }, 1000)
                       })
